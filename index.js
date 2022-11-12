@@ -43,8 +43,23 @@ let correctCount = 0;
 let wrongCount = 0;
 let selectedAnswer;
 
+const playAgain = () => {
+ score = 0;
+ correctCount = 0;
+ wrongCount = 0;
+ selectedAnswer = undefined;
+ qIndex = 0;
+ showQuestion(qIndex);
+};
+
+play.addEventListener("click", () => {
+ gameScreen.style.display = "block";
+ resultScreen.style.display = "none";
+
+ playAgain();
+});
+
 const showResult = () => {
-    console.log(wrongCount)
  resultScreen.style.display = "block";
  gameScreen.style.display = "none";
  const correct = document.querySelector(".correct");
@@ -52,9 +67,8 @@ const showResult = () => {
  const score = document.querySelector(".score");
  correct.textContent = `Correct: ${correctCount}`;
  wrong.textContent = `Wrong: ${wrongCount}`;
- score.textContent = `Score: ${correctCount * wrongCount * 10}`;
+ score.textContent = `Score: ${correctCount * 10}`; // 10 points per correct answer
 };
-selectedAnswer = null;
 
 const selectAnswer = () => {
  answersContainer.querySelectorAll("input").forEach((item) => {
@@ -62,14 +76,11 @@ const selectAnswer = () => {
    selectedAnswer = e.target.value;
   });
  });
- submitAnswer();
 };
 
 const showQuestion = (qNumber) => {
- if (qNumber > data.length) {
-  showResult();
-  return;
- }
+ if (qNumber === data.length) return showResult();
+ selectedAnswer = null;
  question.textContent = data[qNumber].question;
  answersContainer.innerHTML = data[qNumber].answers
   .map((item, i) => {
@@ -83,16 +94,23 @@ const showQuestion = (qNumber) => {
 };
 
 const submitAnswer = () => {
-    console.log(wrongCount)
  submitButton.addEventListener("click", () => {
-  if (selectedAnswer === null) {
-   alert("Please select an answer");
-  } else {
-   selectedAnswer === true ? correctCount++ : wrongCount++;
+  if (selectedAnswer !== null) {
+   selectedAnswer === "true" ? correctCount++ : wrongCount++;
    qIndex++;
    showQuestion(qIndex);
-  }
+  } else alert("Please select an answer");
  });
 };
 
+const startGame = () => {
+ play.addEventListener("click", startGame());
+ qIndex = 0;
+ score = 0;
+ correctCount = 0;
+ wrongCount = 0;
+ selectedAnswer = undefined;
+};
+
 showQuestion(qIndex);
+submitAnswer();
